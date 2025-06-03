@@ -1,0 +1,63 @@
+% Hypersonic Swarm Drone Simulation (MATLAB)
+clear; clc;
+
+N = 50; % Total drones
+dt = 0.1; % Time step (s)
+T = 60; % Total simulation time (s)
+steps = T / dt;
+
+% Define roles
+roles = ["strike", "decoy", "ew", "recon", "alpha"];
+role_distribution = [28, 8, 6, 4, 2]; % Total 48, with 2 spares reassigned later
+
+% Assign roles
+drone(N) = struct();
+id = 1;
+for r = 1:length(roles)
+    for i = 1:role_distribution(r)
+        drone(id).role = roles(r);
+        drone(id).pos = rand(1,2) * 100;
+        drone(id).vel = [1000, 0] + randn(1,2)*10; % initial hypersonic vector
+        id = id + 1;
+    end
+end
+% Fill remaining drones as spares
+for i = id:N
+    drone(i).role = "spare";
+    drone(i).pos = rand(1,2) * 100;
+    drone(i).vel = [950, 0] + randn(1,2)*10;
+end
+
+% Simulation loop
+for t = 1:steps
+    clf; hold on; axis([0 2000 0 2000]); title(['t = ' num2str(t*dt, '%.1f') 's']);
+    for i = 1:N
+        % Basic update rule: hypersonic straight-line flight + role logic
+        pos = drone(i).pos;
+        vel = drone(i).vel;
+
+        % Role behavior
+        switch drone(i).role
+            case "strike"
+                vel = vel + randn(1,2); % slight noise
+            case "decoy"
+                vel = vel + [0, 50 * sin(t*0.2)];
+            case "ew"
+                vel = vel + [0, cos(t*0.3)*20];
+            case "recon"
+                vel = vel + [0, sin(t*0.5)*30];
+            case "alpha"
+                % Alpha relays signals (could manage others later)
+        end
+
+        % Update
+        pos = pos + vel * dt;
+        drone(i).pos = pos;
+        drone(i).vel = vel;
+
+        % Visualization
+        plot(pos(1), pos(2), 'o');
+        text(pos(1), pos(2), string(drone(i).role));
+    end
+    pause(0.05);
+end
