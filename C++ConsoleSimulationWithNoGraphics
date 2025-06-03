@@ -1,0 +1,59 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <cstdlib>
+#include <ctime>
+using namespace std;
+
+struct Vec2 {
+    double x, y;
+    Vec2 operator+(Vec2 v) { return {x+v.x, y+v.y}; }
+    Vec2 operator*(double s) { return {x*s, y*s}; }
+};
+
+struct Drone {
+    string role;
+    Vec2 pos;
+    Vec2 vel;
+};
+
+int main() {
+    srand(time(0));
+    const int N = 50;
+    vector<Drone> swarm(N);
+
+    // Assign roles
+    vector<string> roles;
+    roles.insert(roles.end(), 28, "strike");
+    roles.insert(roles.end(), 8, "decoy");
+    roles.insert(roles.end(), 6, "ew");
+    roles.insert(roles.end(), 4, "recon");
+    roles.insert(roles.end(), 2, "alpha");
+    roles.insert(roles.end(), 2, "spare");
+
+    random_shuffle(roles.begin(), roles.end());
+
+    // Initialize drones
+    for (int i = 0; i < N; ++i) {
+        swarm[i].role = roles[i];
+        swarm[i].pos = {rand()%100, rand()%100};
+        swarm[i].vel = {1000 + rand()%10, rand()%10};
+    }
+
+    // Simulate
+    for (int t = 0; t < 600; ++t) {
+        cout << "Time: " << t*0.1 << "s\n";
+        for (int i = 0; i < N; ++i) {
+            Drone &d = swarm[i];
+            if (d.role == "decoy") d.vel.y += 50 * sin(t*0.2);
+            else if (d.role == "ew") d.vel.y += 20 * cos(t*0.3);
+            else if (d.role == "recon") d.vel.y += 30 * sin(t*0.5);
+            d.pos = d.pos + d.vel * 0.1;
+            cout << "[" << d.role << "] Pos(" << d.pos.x << ", " << d.pos.y << ")\n";
+        }
+        cout << "---------------------------\n";
+    }
+
+    return 0;
+}
