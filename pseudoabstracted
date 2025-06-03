@@ -1,0 +1,20 @@
+If ROLE == Strike:
+    Track primary target
+    If target locked by ABM:
+        Execute evasive maneuver set
+    Detonate upon proximity or impact
+
+If ROLE == Decoy:
+    Match heat & radar profile of Strike
+    Draw enemy interceptor lock-on
+    Self-destruct after max range
+
+If ROLE == EW:
+    Emit jamming burst
+    Scramble radar bands dynamically
+    Tail Alpha or Relay Node to protect signal
+
+If ROLE == Alpha:
+    Maintain swarm-wide state
+    Issue reassignments on node loss
+    Periodically pulse nav correction
