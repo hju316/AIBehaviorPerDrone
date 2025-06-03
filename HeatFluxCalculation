@@ -1,0 +1,4 @@
+function q_dot = reentry_heat_flux(v, rho, Rn)
+    C = 1.83e-4; % Sutton-Graves coefficient
+    q_dot = (C / sqrt(Rn)) * sqrt(rho) * v^3;
+end
