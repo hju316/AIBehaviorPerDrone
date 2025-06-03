@@ -1,0 +1,43 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib.animation import FuncAnimation
+
+N = 50
+roles = ["strike"] * 28 + ["decoy"] * 8 + ["ew"] * 6 + ["recon"] * 4 + ["alpha"] * 2 + ["spare"] * 2
+np.random.shuffle(roles)
+
+positions = np.random.rand(N, 3) * [100, 100, 10] + [0, 0, 40]
+velocities = np.tile(np.array([1000.0, 0.0, 0.0]), (N,1)) + np.random.randn(N,3) * 10
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+scat = ax.scatter(positions[:,0], positions[:,1], positions[:,2])
+
+def update(frame):
+    global positions, velocities
+    for i in range(N):
+        role = roles[i]
+        if role == "strike":
+            velocities[i] += np.random.randn(3)
+        elif role == "decoy":
+            velocities[i][1] += 50 * np.sin(frame * 0.2)
+            velocities[i][2] += 1.5 * np.sin(frame * 0.3)
+        elif role == "ew":
+            velocities[i][1] += 20 * np.cos(frame * 0.3)
+            velocities[i][2] -= 0.2 * np.sin(frame * 0.1)
+        elif role == "recon":
+            velocities[i][2] += 0.3 * np.sin(frame * 0.5)
+        elif role == "alpha":
+            velocities[i][2] += 0.1 * np.cos(frame * 0.2)
+
+        positions[i] += velocities[i] * 0.1
+
+    scat._offsets3d = (positions[:,0], positions[:,1], positions[:,2])
+    ax.set_xlim(0, 2000)
+    ax.set_ylim(0, 2000)
+    ax.set_zlim(30, 60)
+    ax.set_title(f"Time: {frame*0.1:.1f}s")
+
+ani = FuncAnimation(fig, update, frames=600, interval=50)
+plt.show()
