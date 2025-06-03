@@ -1,0 +1,40 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+
+N = 50
+roles = ["strike"] * 28 + ["decoy"] * 8 + ["ew"] * 6 + ["recon"] * 4 + ["alpha"] * 2 + ["spare"] * 2
+np.random.shuffle(roles)
+
+positions = np.random.rand(N, 2) * 100
+velocities = np.tile(np.array([1000.0, 0.0]), (N,1)) + np.random.randn(N,2) * 10
+
+fig, ax = plt.subplots()
+scat = ax.scatter(positions[:,0], positions[:,1])
+txt = [ax.text(0, 0, "", fontsize=6) for _ in range(N)]
+
+def update(frame):
+    global positions, velocities
+    for i in range(N):
+        role = roles[i]
+        if role == "strike":
+            velocities[i] += np.random.randn(2)
+        elif role == "decoy":
+            velocities[i][1] += 50 * np.sin(frame * 0.2)
+        elif role == "ew":
+            velocities[i][1] += 20 * np.cos(frame * 0.3)
+        elif role == "recon":
+            velocities[i][1] += 30 * np.sin(frame * 0.5)
+
+        positions[i] += velocities[i] * 0.1
+
+    scat.set_offsets(positions)
+    for i, t in enumerate(txt):
+        t.set_position(positions[i])
+        t.set_text(roles[i])
+    ax.set_xlim(0, 2000)
+    ax.set_ylim(0, 2000)
+    ax.set_title(f"Time: {frame * 0.1:.1f}s")
+
+ani = FuncAnimation(fig, update, frames=600, interval=50)
+plt.show()
