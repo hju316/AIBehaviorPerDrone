@@ -1,0 +1,13 @@
+    alt_km = drone(i).pos(3); % z-axis as altitude in km
+    rho = atmosphere_density(alt_km); 
+    speed = norm(drone(i).vel);
+    Rn = 0.1; % Nose radius in meters (e.g., 10 cm)
+    q = reentry_heat_flux(speed, rho, Rn); % W/m²
+
+    drone(i).heat_flux = q; % store it for analysis
+
+    % Optional: thermal alert
+    if q > 1e6  % above 1 MW/m² is critical
+        disp(['🔥 Thermal warning on drone ' num2str(i) ' at t=' num2str(t*dt) ...
+              's | q = ' num2str(q/1e6, '%.2f') ' MW/m²']);
+    end
